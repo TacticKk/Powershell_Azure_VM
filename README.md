@@ -35,8 +35,8 @@ function VM_creation {
     $Password = ConvertTo-SecureString -String $Password -AsPlainText -Force
     $cred = New-Object -TypeName PSCredential -ArgumentList ($Username, $Password)
 
-    New-AzVm -ResourceGroupName $RG_name -Location $Location_name -Name $vm_name -SecurityGroupName $NSG_name -VirtualNetworkName $VNet_name -SubnetName $subnet_name `
-    -Credential $cred
+    New-AzVm -ResourceGroupName $RG_name -Location $Location_name -Name $vm_name -SecurityGroupName $NSG_name ` 
+    -VirtualNetworkName $VNet_name -SubnetName $subnet_name -Credential $cred
 
     #Pas de possibilité de setup le "Standard_B1s" de base, donc on update à la création de la VM
     Stop-AzVM -ResourceGroupName $RG_name -Name $vm_name -Force
