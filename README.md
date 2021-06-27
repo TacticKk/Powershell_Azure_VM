@@ -64,7 +64,7 @@ NB : Nous avons créé un alias au début du script de "Read-Host" vers "Read" q
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
-![GitHub Logo](/VM.png)
+![GitHub Logo](/images/VM.png)
 Format: ![Alt Text](url)
 
 Please make sure to update tests as appropriate.
