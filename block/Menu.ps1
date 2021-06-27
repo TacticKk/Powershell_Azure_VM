@@ -1,0 +1,7 @@
+Write-Host "============= Pick the Server environment=============="
+Write-Host "`ta. [1] pour déployer des VMs en précisant chaque paramètre"
+Write-Host "`tb. [2] pour déployer un nombre précis de VMs avec les mêmes paramètres"
+Write-Host "`tc. [3] pour déployer des VMs depuis un Excel"
+Write-Host "`td. [4] to Quit'"
+Write-Host "========================================================"
+$choice = Read-Host "`nEnter Choice"
