@@ -1,4 +1,6 @@
 Set-Alias -Name Read -Value Read-Host
+
+########################################################### FONCTION ###########################################################
 function VM_creation {
     param ([string]$vm_name,[string]$RG_name,[string]$Location_name,[string]$VNet_name,[string]$subnet_name, [string]$NSG_name)
 
@@ -16,32 +18,9 @@ function VM_creation {
     $vm.HardwareProfile.VmSize = "Standard_B1s"
     Update-AzVM -VM $vm -ResourceGroupName $RG_name
     Start-AzVM -ResourceGroupName $RG_name  -Name $vm.name
-
-    #Ajout d'une règle entrante RDP au NSG afin de pouvoir prendre la main sur la machine
-
-    $nsg = (Get-AzNetworkSecurityGroup).SecurityRules
-    $rules = $nsg.DestinationPortRange
-
-    foreach ($rule in $rules){
-    
-    if ($rules -eq "3389"){
-        Write-Host "La règle existe déjà"
-        break
-        }
-    else {
-        $nsg = Get-AzNetworkSecurityGroup -Name $NSG_name -ResourceGroupName $RG_name
-        #Add the inbound security rule.
-        $nsg | Add-AzNetworkSecurityRuleConfig -Name "AllowRDPPort" -Description "Allow RDP port" -Access Allow `
-        -Protocol * -Direction Inbound -Priority 3901 -SourceAddressPrefix "*" -SourcePortRange * `
-        -DestinationAddressPrefix * -DestinationPortRange 3389
-        # Update the NSG.
-        $nsg | Set-AzNetworkSecurityGroup
-        break 
-        }
-    } 
 }
 
-#############################################################
+############################################################# MENU #############################################################
 
 Write-Host "============= Choose =============="
 Write-Host "`ta. [1] pour déployer des VMs en précisant chaque paramètre"
@@ -51,6 +30,7 @@ Write-Host "`td. [4] to Quit'"
 Write-Host "========================================================"
 $choice = Read "`nEnter Choice"
 
+############################################################# SWITCH ###########################################################
 switch ($choice) {
 
     #Déploiement de VMs une par une avec des paramètres différents
@@ -68,12 +48,16 @@ switch ($choice) {
     #Déploiement de VMs par nombre avec des mêmes paramètres (en dur dans le script)
     '2'{
         $answer = Read "How much VM do want to create sur Azure ? "
-        
+        $RG_name = Read "Nom du RG "
+        $Location_name = Read "Nom de location "
+        $Vnet_name = Read "Nom du VNet "
+        $Subnet_name = Read "Nom du Subnet "
+        $NSG_name = Read "Nom du NSG "
+
         $i = 1
-        while ($i -ne $answer) {
+        while ($i -le $answer) {
             $vm_name = Read "Nom de la VM $i"
-            VM_creation -vm_name $vm_name -RG_name "RG_test" -Location_name "francecentral" -VNet_name "VNet_test" -subnet_name "frontendSubnet" -NSG_name "NSG_test" 
-            
+            VM_creation -vm_name $vm_name -RG_name $RG_name -Location_name $Location_name -VNet_name $Vnet_name -subnet_name $Subnet_name -NSG_name $NSG_name 
             $i++
         }
     }
@@ -84,4 +68,27 @@ switch ($choice) {
     }
     #Ferme le script
     '4'{Return}
+}
+
+############################################################ NSG ###########################################################
+#Ajout d'une règle entrante RDP au NSG afin de pouvoir prendre la main sur la machine
+
+$nsg = (Get-AzNetworkSecurityGroup).SecurityRules
+$rules = $nsg.DestinationPortRange
+
+foreach ($rule in $rules){
+    
+    if ($rules -eq "3389"){
+        break
+    }
+    else {
+        $nsg = Get-AzNetworkSecurityGroup -Name $NSG_name -ResourceGroupName $RG_name
+        #Add the inbound security rule.
+        $nsg | Add-AzNetworkSecurityRuleConfig -Name "AllowRDPPort" -Description "Allow RDP port" -Access Allow `
+        -Protocol * -Direction Inbound -Priority 3901 -SourceAddressPrefix "*" -SourcePortRange * `
+        -DestinationAddressPrefix * -DestinationPortRange 3389
+        # Update the NSG.
+        $nsg | Set-AzNetworkSecurityGroup
+        break 
+    }
 }
