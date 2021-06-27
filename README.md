@@ -94,7 +94,102 @@ Etant donné que nous avons plusieurs possibilités dans notre script, l'appel v
 
 NB : Nous avons créé un alias au début du script de "Read-Host" vers "Read" qui nous permet donc faciliter l'écriture et la lecture de ce dernier.
 
+
+## 2/ Installation d'un Active Directory et DNS + création d'utilisateurs
+
+### A - Pré-requis
+
+Avant toute chose, nous avons fais les manipulations sur une VM Azure sous Windows Server 2019 Datacenter. Pour pouvoir exécuter la première partie du script, il n'y a doncpas besoin de module à installer. En revanche, pour la seconde partie, il faut installer le module suivant :
+
+```powershell
+Import-Module ActiveDirectory
+```
+
+### B - Installation de l'AD et du DNS (regroupé sous la feature ADDS)
+
+```powershell
+Install-WindowsFeature AD-Domain-Services -IncludeManagementTools
+
+Install-ADDSForest -DomainName "Powershell.local" -DomainNetBiosName "POWER" -InstallDns:$true -NoRebootOnCompletion:$true
+```
+### C - Configuration du DNS
+
+Avec les deux lignes ci-dessous, nous allons faire de notre serveur, le serveur principal (de première zone) de notre domaine et rediriger les requêtes vers l'adresse IP 8.8.8.8 qui correpond aux serveurs DNS de Google.
+
+```powershell
+Add-DnsServerPrimaryZone -NetworkID 10.0.1.0/24 -ZoneFile “10.0.1.4.in-addr.arpa.dns”
+
+Add-DnsServerForwarder -IPAddress 8.8.8.8 -PassThru
+```
+Nous allons tester que notre serveur fonctionne bien avec la ligne de commande suivant :
+
+```powershell
+Test-DnsServer -IPAddress 10.0.1.4 -ZoneName "Powershell.local"
+```
+Si le résultat est un "Success" alors le serveur fonctionne.
+
+
+### D - Création d'utilisateurs au sein de l'AD
+
+Voici ci dessous le script permettant de créer les utilisateurs. Nous partons d'un fichier CSV, qui est importé avec la commande :
+
+```powershell
+# Store the data from NewUsersFinal.csv in the $ADUsers variable
+$csv = Import-Csv C:\Users\antoine\Desktop\MOCK_DATA.csv -Delimiter ";"
+```
+
+Ensuite, nous definissons l'UPN du domaine ainsi que pour chaque élément du fichier CSV, les éléments nécessaire à la création du compte via une boucle foreach :
+
+```powershell
+# Define UPN
+$UPN = "Powershell.local"
+
+# Loop through each row containing user details in the CSV file
+foreach ($User in $csv) {
+
+    $username = $User.username
+    $password = $User.password
+    $firstname = $User.prenom
+    $lastname = $User.nom
+    $OU = $User.OU #This field refers to the OU the user account is to be created in
+    $email = $User.email
+    $country = $User.country
+```
+Puis le script effectue une suppression des personnes déjà existantes dans l'AD en ayant comme base l'username de la personne, qui doit être unique. Dans le cas où l'username n'existe pas déjà, alors le compte est créé avec toutes les informations contenues dans le CSV.
+
+```powershell
+    # Check to see if the user already exists in AD
+    if (Get-ADUser -F { SamAccountName -eq $username }) {
+        
+        # If user does exist, give a warning
+        Write-Warning "Un compte avec l'username $username existe déjà dans l'AD."
+    }
+    else {
+
+        # User does not exist then proceed to create the new user account
+        # Account will be created in the OU provided by the $OU variable read from the CSV file
+        New-ADUser -SamAccountName $username `
+            -UserPrincipalName "$username@$UPN" `
+            -Name "$firstname $lastname" `
+            -GivenName $firstname `
+            -Surname $lastname `
+            -Enabled $True `
+            -DisplayName "$lastname, $firstname" `
+            -Path $OU `
+            -EmailAddress $email `
+            -AccountPassword (ConvertTo-secureString $password -AsPlainText -Force) -ChangePasswordAtLogon $True
+
+        # If user is created, show message.
+        Write-Host "Le compte de l'utilisateur $username a été créé." -ForegroundColor Cyan
+    }
+}
+
+Read-Host -Prompt "Quiter..."
+```
+
 ## Principales sources
+
+### Script 1 - Déploiements de machines virtuelles sur Azure
 [Documentation Microsoft : "Azure Windows - Quick create Powershell"](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/quick-create-powershell) 
 
 [Documentation Microsoft : "Azure Virtual Network - Quick create Powershell"](https://docs.microsoft.com/en-us/azure/virtual-network/quick-create-powershell)
@@ -104,3 +199,12 @@ NB : Nous avons créé un alias au début du script de "Read-Host" vers "Read" q
 [Documentation Microsoft : "Azure Virtual Network - B Series"](https://docs.microsoft.com/fr-fr/azure/virtual-machines/sizes-b-series-burstables)
 
 [Documentation UKCloud : "Azure - How to create VM"](https://docs.ukcloud.com/articles/azure/azs-how-create-vm-ps.html?tabs=tabid-1)
+
+### Script 2 - Installation d'un Active Directory et DNS + création d'utilisateurs
+[Documentation RDR-IT : "Powershell - How to create an AD"](https://rdr-it.com/en/create-an-active-directory-environment-in-powershell/)
+
+[Documentation MalwareMily : "Powershell - How to create ADDS & DHCP"](https://malwaremily.medium.com/install-ad-ds-dns-and-dhcp-using-powershell-on-windows-server-2016-ac331e5988a7)
+
+[Documentation Alitajran : "Powershell - How to create users from CSV"](https://www.alitajran.com/create-active-directory-users-from-csv-with-powershell/)
+
+[Website UKCloud : "Tool - Random Data Generator"](https://www.mockaroo.com/)
