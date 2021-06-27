@@ -12,14 +12,14 @@ Ce projet est constitué de deux scripts :
 
 Pour pouvoir exécuter le script, il faut installer le module Azure.
 
-```bash
+```powershell
 Install-Module Azure -AllowClobber
 Import-Module Azure
 ```
 
 Ensuite, il faut se connecter à son compte Azure sur lequel nous souhaitons faire nos manipulations.
 
-```bash
+```powershell
 Connect-AzAccount
 ```
 
@@ -50,7 +50,7 @@ Enfin, nous ne pouvons (contrairement au CLI Azure) fournir de base la "VM Size"
 
 Le fait d'avoir mis des paramètres dans la fonction va permettre d'avoir un appel de la fonction plus personnalisé et de pouvoir mettre nos propres paramètres au sein de l'appel. Ainsi, les différents paramètres que l'on rempli sont ceux de notre fonction.
 
-```bash
+```powershell
 VM_creation -vm_name (Read "Nom de la VM  ") `
             -RG_name (Read "Nom du RG  ") `
             -Location_name (Read "Nom de la location  ") `
