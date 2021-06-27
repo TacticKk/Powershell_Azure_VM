@@ -70,4 +70,4 @@ NB : Nous avons créé un alias au début du script de "Read-Host" vers "Read" q
 
 [Documentation Microsoft : "Azure Virtual Network - B Series"](https://docs.microsoft.com/fr-fr/azure/virtual-machines/sizes-b-series-burstables)
 
-![Semantic description of image](VM.PNG "Image Title")
+![Semantic description of image](/img/VM.PNG "Image Title")
