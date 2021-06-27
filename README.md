@@ -90,16 +90,7 @@ Nous avons mis en place un menu où l'utilisateur va choisir ce qu'il fait, selo
 
 ### D - Appel de la fonction
 
-Le fait d'avoir mis des paramètres dans la fonction va permettre d'avoir un appel de la fonction plus personnalisé et de pouvoir mettre nos propres paramètres au sein de l'appel. Ainsi, les différents paramètres que l'on rempli sont ceux de notre fonction.
-
-```powershell
-VM_creation -vm_name (Read "Nom de la VM  ") `
-            -RG_name (Read "Nom du RG  ") `
-            -Location_name (Read "Nom de la location  ") `
-            -VNet_name (Read "Nom du VNet  ") `
-            -subnet_name (Read "Nom du subnet  ") `
-            -NSG_name (Read "Nom du NSG  ") 
-```
+Etant donné que nous avons plusieurs possibilités dans notre script, l'appel va se faire de la même façon en écrivant "VM_Creation" qui est le nom de la fonction. Cependant, les informations données et/ou attendues ne sont pas les mêmes.
 
 NB : Nous avons créé un alias au début du script de "Read-Host" vers "Read" qui nous permet donc faciliter l'écriture et la lecture de ce dernier.
 
