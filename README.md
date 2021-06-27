@@ -69,3 +69,5 @@ NB : Nous avons créé un alias au début du script de "Read-Host" vers "Read" q
 [Documentation Microsoft : "Azure - Network Security Group"](https://docs.microsoft.com/en-us/powershell/module/az.network/new-aznetworksecuritygroup?view=azps-6.1.0)
 
 [Documentation Microsoft : "Azure Virtual Network - B Series"](https://docs.microsoft.com/fr-fr/azure/virtual-machines/sizes-b-series-burstables)
+
+![Semantic description of image](VM.PNG "Image Title")
