@@ -12,21 +12,21 @@ Ce projet est constitué de deux scripts :
 
 Pour pouvoir exécuter le script, il faut installer le module Azure.
 
-```powershell
+```bash
 Install-Module Azure -AllowClobber
 Import-Module Azure
 ```
 
 Ensuite, il faut se connecter à son compte Azure sur lequel nous souhaitons faire nos manipulations.
 
-```powershell
+```bash
 Connect-AzAccount
 ```
 
 ### B - Fonction VM_creation
 
 La créationd de fonction permet de faciliter la création de VM et d'éviter de réécrire de nombreuses choses.
-```powershell
+```bash
 function VM_creation {
     param ([string]$vm_name,[string]$RG_name,[string]$Location_name, `
     [string]$VNet_name,[string]$subnet_name, [string]$NSG_name)
@@ -50,21 +50,16 @@ Enfin, nous ne pouvons (contrairement au CLI Azure) fournir de base la "VM Size"
 
 Le fait d'avoir mis des paramètres dans la fonction va permettre d'avoir un appel de la fonction plus personnalisé et de pouvoir mettre nos propres paramètres au sein de l'appel. Ainsi, les différents paramètres que l'on rempli sont ceux de notre fonction.
 
-```powershell
+```bash
 VM_creation -vm_name (Read "Nom de la VM  ") `
             -RG_name (Read "Nom du RG  ") `
             -Location_name (Read "Nom de la location  ") `
-            -VNet_name (Read "Nom deu VNet  ") `
+            -VNet_name (Read "Nom du VNet  ") `
             -subnet_name (Read "Nom du subnet  ") `
             -NSG_name (Read "Nom du NSG  ") 
 ```
+
 NB : Nous avons créé un alias au début du script de "Read-Host" vers "Read" qui nous permet donc faciliter l'écriture et la lecture de ce dernier.
-
-
-## Contributing
-Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
-
-Please make sure to update tests as appropriate.
 
 ## Principales sources
 [Documentation Microsoft : "Azure Windows - Quick create Powershell"](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/quick-create-powershell) 
