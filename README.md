@@ -26,7 +26,7 @@ Connect-AzAccount
 ### B - Fonction VM_creation
 
 La créationd de fonction permet de faciliter la création de VM et d'éviter de réécrire de nombreuses choses.
-```bash
+```powershell
 function VM_creation {
     param ([string]$vm_name,[string]$RG_name,[string]$Location_name, `
     [string]$VNet_name,[string]$subnet_name, [string]$NSG_name)
