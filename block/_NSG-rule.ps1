@@ -1,13 +1,13 @@
-    # Ajout d'une règle entrante RDP au NSG afin de pouvoir prendre la main sur la machine
+#Ajout d'une règle entrante RDP au NSG afin de pouvoir prendre la main sur la machine
 
-    $rules = (Get-AzNetworkSecurityGroup).SecurityRules.Name
+$nsg = (Get-AzNetworkSecurityGroup).SecurityRules
+$rules = $nsg.DestinationPortRange
 
-    foreach ($rule in $rules){
+foreach ($rule in $rules){
     
-    if ($rules -eq "AllowRDPPort"){
-        Write-Host "La règle existe déjà"
+    if ($rules -eq "3389"){
         break
-        }
+    }
     else {
         $nsg = Get-AzNetworkSecurityGroup -Name $NSG_name -ResourceGroupName $RG_name
         #Add the inbound security rule.
@@ -16,6 +16,6 @@
         -DestinationAddressPrefix * -DestinationPortRange 3389
         # Update the NSG.
         $nsg | Set-AzNetworkSecurityGroup
-        break
-        }
+        break 
     }
+}
