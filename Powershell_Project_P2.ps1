@@ -17,7 +17,7 @@ Test-DnsServer -IPAddress 10.0.1.4 -ZoneName "Powershell.local" #Vérif fonction
 
 Import-Module ActiveDirectory
 
-$csv = Import-Csv C:\Users\antoine\Desktop\MOCK_DATA.csv -Delimiter ";"
+$csv = Import-Csv C:\Users\Antoine\Desktop\DEV\project_powershell\MOCK_DATA.csv -Delimiter ";"
 
 # Fournir l'UPN
 $UPN = "Powershell.local"
