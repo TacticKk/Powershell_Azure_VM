@@ -45,7 +45,15 @@ function VM_creation {
     Update-AzVM -VM $vm -ResourceGroupName $RG_name
     Start-AzVM -ResourceGroupName $RG_name  -Name $vm.name
 }
+```
 
+Dans cette fonction, nous avons mis en paramètres les informations dont nous avons besoin, afin de pouvoir vraiment simplifier la démarche.
+
+De plus, nous ne pouvons (contrairement au CLI Azure) fournir de base la "VM Size" que l'on souhaite. Ainsi, le script va en fournir une par défaut. C'est pourquoi nous faisons une update de la machine afin de passer dans la "VM Size" voulue.
+
+Enfin, nous avons juste après la fonction, une boucle foreach qui va vérifier si la règle pour le RDP est déjà existante ou non dans notre NSG et l'ajouter si ce n'est pas le cas.
+
+```powershell
 #Ajout d'une règle entrante RDP au NSG afin de pouvoir prendre la main sur la machine
 
 $nsg = (Get-AzNetworkSecurityGroup).SecurityRules
@@ -68,11 +76,6 @@ foreach ($rule in $rules){
     }
 }
 ```
-Dans cette fonction, nous avons mis en paramètres les informations dont nous avons besoin, afin de pouvoir vraiment simplifier la démarche.
-
-De plus, nous ne pouvons (contrairement au CLI Azure) fournir de base la "VM Size" que l'on souhaite. Ainsi, le script va en fournir une par défaut. C'est pourquoi nous faisons une update de la machine afin de passer dans la "VM Size" voulue.
-
-Enfin, nous avons juste après la fonction, une boucle foreach qui va vérifier si la règle pour le RDP est déjà existante ou non dans notre NSG et l'ajouter si ce n'est pas le cas.
 
 ### C - Menu des fonctions
 
