@@ -25,7 +25,7 @@ Connect-AzAccount
 
 ### B - Fonction VM_creation
 
-La créationd de fonction permet de faciliter la création de VM et d'éviter de réécrire de nombreuses choses.
+La création de fonction permet de faciliter la création de VM et d'éviter de réécrire de nombreuses choses.
 ```powershell
 function VM_creation {
     param ([string]$vm_name,[string]$RG_name,[string]$Location_name,[string]$VNet_name,[string]$subnet_name, [string]$NSG_name)
@@ -154,7 +154,6 @@ foreach ($User in $csv) {
     $lastname = $User.nom
     $OU = $User.OU #This field refers to the OU the user account is to be created in
     $email = $User.email
-    $country = $User.country
 ```
 Puis le script effectue une suppression des personnes déjà existantes dans l'AD en ayant comme base l'username de la personne, qui doit être unique. Dans le cas où l'username n'existe pas déjà, alors le compte est créé avec toutes les informations contenues dans le CSV.
 
