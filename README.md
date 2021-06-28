@@ -203,8 +203,6 @@ Read-Host -Prompt "Quiter..."
 
 [Documentation Microsoft : "Azure Virtual Network - B Series"](https://docs.microsoft.com/fr-fr/azure/virtual-machines/sizes-b-series-burstables)
 
-[Documentation UKCloud : "Azure - How to create VM"](https://docs.ukcloud.com/articles/azure/azs-how-create-vm-ps.html?tabs=tabid-1)
-
 ### Script 2 - Installation d'un Active Directory et DNS + création d'utilisateurs
 [Documentation RDR-IT : "Powershell - How to create an AD"](https://rdr-it.com/en/create-an-active-directory-environment-in-powershell/)
 
