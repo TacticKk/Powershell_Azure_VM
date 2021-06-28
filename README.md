@@ -45,14 +45,16 @@ function VM_creation {
     Update-AzVM -VM $vm -ResourceGroupName $RG_name
     Start-AzVM -ResourceGroupName $RG_name  -Name $vm.name
 
-    # Ajout d'une règle entrante RDP au NSG afin de pouvoir prendre la main sur la machine
+}
 
-    $rules = (Get-AzNetworkSecurityGroup).SecurityRules.Name
+#Ajout d'une règle entrante RDP au NSG afin de pouvoir prendre la main sur la machine
 
-    foreach ($rule in $rules){
+$nsg = (Get-AzNetworkSecurityGroup).SecurityRules
+$rules = $nsg.DestinationPortRange
+
+foreach ($rule in $rules){
     
-    if ($rules -eq "AllowRDPPort"){
-        Write-Host "La règle existe déjà"
+    if ($rules -eq "3389"){
         break
     }
     else {
@@ -62,16 +64,16 @@ function VM_creation {
         -Protocol * -Direction Inbound -Priority 3901 -SourceAddressPrefix "*" -SourcePortRange * `
         -DestinationAddressPrefix * -DestinationPortRange 3389
         # Update the NSG.
-        $nsg | Set-AzNetworkSecurityGroup}
-        break
-
+        $nsg | Set-AzNetworkSecurityGroup
+        break 
+    }
 }
 ```
 Dans cette fonction, nous avons mis en paramètres les informations dont nous avons besoin, afin de pouvoir vraiment simplifier la démarche.
 
 De plus, nous ne pouvons (contrairement au CLI Azure) fournir de base la "VM Size" que l'on souhaite. Ainsi, le script va en fournir une par défaut. C'est pourquoi nous faisons une update de la machine afin de passer dans la "VM Size" voulue.
 
-Enfin, nous avons à la fin de la fonction, une boucle foreach qui va vérifier si la règle pour le RDP est déjà existante ou non dans notre NSG et l'ajouter si ce n'est pas le cas.
+Enfin, nous avons juste après la fonction, une boucle foreach qui va vérifier si la règle pour le RDP est déjà existante ou non dans notre NSG et l'ajouter si ce n'est pas le cas.
 
 ### C - Menu des fonctions
 
