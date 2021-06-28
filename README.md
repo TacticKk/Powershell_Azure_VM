@@ -28,15 +28,16 @@ Connect-AzAccount
 La création de fonction permet de faciliter la création de VM et d'éviter de réécrire de nombreuses choses.
 ```powershell
 function VM_creation {
-    param ([string]$vm_name,[string]$RG_name,[string]$Location_name,[string]$VNet_name,[string]$subnet_name, [string]$NSG_name)
+    param ([string]$vm_name,[string]$RG_name,[string]$Location_name,[string]$VNet_name,[string]$subnet_name, `
+    [string]$NSG_name)
 
     <#$Username = Read "Nom pour le compte de base de la VM ?"
     $Password = 'Password de base pour la VM ?' #Trouver le moyen de cacher le texte
     $Password = ConvertTo-SecureString -String $Password -AsPlainText -Force
     $cred = New-Object -TypeName PSCredential -ArgumentList ($Username, $Password) #>
 
-    New-AzVm -ResourceGroupName $RG_name -Location $Location_name -Name $vm_name -SecurityGroupName $NSG_name -VirtualNetworkName $VNet_name -SubnetName $subnet_name `
-    <# -Credential $cred #>
+    New-AzVm -ResourceGroupName $RG_name -Location $Location_name -Name $vm_name -SecurityGroupName $NSG_name `
+    -VirtualNetworkName $VNet_name -SubnetName $subnet_name <# -Credential $cred #>
 
     #Update le "Standard_B1s" à la création de la VM (y'a un autre moyen mais + long, faut se pencher dessus)
     Stop-AzVM -ResourceGroupName $RG_name -Name $vm_name -Force
@@ -67,9 +68,9 @@ foreach ($rule in $rules){
     else {
         $nsg = Get-AzNetworkSecurityGroup -Name $NSG_name -ResourceGroupName $RG_name
         #Add the inbound security rule.
-        $nsg | Add-AzNetworkSecurityRuleConfig -Name "AllowRDPPort" -Description "Allow RDP port" -Access Allow `
-        -Protocol * -Direction Inbound -Priority 3901 -SourceAddressPrefix "*" -SourcePortRange * `
-        -DestinationAddressPrefix * -DestinationPortRange 3389
+        $nsg | Add-AzNetworkSecurityRuleConfig -Name "AllowRDPPort" -Description "Allow RDP port" `
+        -Access Allow -Protocol * -Direction Inbound -Priority 3901 -SourceAddressPrefix "*" `
+        -SourcePortRange * -DestinationAddressPrefix * -DestinationPortRange 3389
         # Update the NSG.
         $nsg | Set-AzNetworkSecurityGroup
         break 
@@ -114,7 +115,8 @@ Import-Module ActiveDirectory
 ```powershell
 Install-WindowsFeature AD-Domain-Services -IncludeManagementTools
 
-Install-ADDSForest -DomainName "Powershell.local" -DomainNetBiosName "POWER" -InstallDns:$true -NoRebootOnCompletion:$true
+Install-ADDSForest -DomainName "Powershell.local" -DomainNetBiosName "POWER" -InstallDns:$true `
+-NoRebootOnCompletion:$true
 ```
 ### C - Configuration du DNS
 
@@ -180,7 +182,8 @@ Puis le script effectue une suppression des personnes déjà existantes dans l'A
             -DisplayName "$lastname, $firstname" `
             -Path $OU `
             -EmailAddress $email `
-            -AccountPassword (ConvertTo-secureString $password -AsPlainText -Force) -ChangePasswordAtLogon $True
+            -AccountPassword (ConvertTo-secureString $password -AsPlainText -Force) `
+            -ChangePasswordAtLogon $True
 
         # If user is created, show message.
         Write-Host "Le compte de l'utilisateur $username a été créé." -ForegroundColor Cyan
