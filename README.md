@@ -28,8 +28,7 @@ Connect-AzAccount
 La création de fonction permet de faciliter la création de VM et d'éviter de réécrire de nombreuses choses.
 ```powershell
 function VM_creation {
-    param ([string]$vm_name,[string]$RG_name,[string]$Location_name,[string]$VNet_name,[string]$subnet_name, `
-    [string]$NSG_name)
+    param ([string]$vm_name,[string]$RG_name,[string]$Location_name,[string]$VNet_name,[string]$subnet_name, [string]$NSG_name)
 
     <#$Username = Read "Nom pour le compte de base de la VM ?"
     $Password = 'Password de base pour la VM ?' #Trouver le moyen de cacher le texte
