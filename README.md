@@ -8,6 +8,8 @@ Ce projet est constitué de deux scripts :
 
 ## 1/ Déploiements de machines virtuelles sur Azure
 
+NB : Nous avons créé un alias au début du script de "Read-Host" vers "Read" qui nous permet donc faciliter l'écriture et la lecture de ce dernier.
+
 ### A - Pré-requis
 
 Pour pouvoir exécuter le script, il faut installer le module Azure.
@@ -95,8 +97,6 @@ Nous avons mis en place un menu où l'utilisateur va choisir ce qu'il fait, selo
 ### D - Appel de la fonction
 
 Etant donné que nous avons plusieurs possibilités dans notre script, l'appel va se faire de la même façon en écrivant "VM_Creation" qui est le nom de la fonction. Cependant, les informations données et/ou attendues ne sont pas les mêmes.
-
-NB : Nous avons créé un alias au début du script de "Read-Host" vers "Read" qui nous permet donc faciliter l'écriture et la lecture de ce dernier.
 
 
 ## 2/ Installation d'un Active Directory et DNS + création d'utilisateurs
