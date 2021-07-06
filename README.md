@@ -257,6 +257,8 @@ Read-Host -Prompt "Quiter..."
 
 [Documentation Microsoft : "Azure Virtual Network - B Series"](https://docs.microsoft.com/fr-fr/azure/virtual-machines/sizes-b-series-burstables)
 
+[Documentation Microsoft : "Azure Powershell - Get-AzRemoteDesktopFile"](https://docs.microsoft.com/en-us/powershell/module/az.compute/get-azremotedesktopfile?view=azps-6.2.0)
+
 ### Script 2 - Installation d'un Active Directory et DNS + création d'utilisateurs
 [Documentation RDR-IT : "Powershell - How to create an AD"](https://rdr-it.com/en/create-an-active-directory-environment-in-powershell/)
 
