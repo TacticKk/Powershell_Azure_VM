@@ -1,6 +1,6 @@
 # Projet Powershell
 
-Ce projet est constitué de deux scripts :
+Se projet est constitué de deux scripts :
 
 1/ Déploiements de VMs Azure
 
