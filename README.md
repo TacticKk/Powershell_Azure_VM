@@ -109,23 +109,25 @@ Enfin, nous avons juste après la fonction, une boucle foreach qui va vérifier 
 ```powershell
 #Ajout d'une règle entrante RDP au NSG afin de pouvoir prendre la main sur la machine
 
-$nsg = (Get-AzNetworkSecurityGroup).SecurityRules
-$rules = $nsg.DestinationPortRange
+$get_nsg_rules = (Get-AzNetworkSecurityGroup).SecurityRules
+$get_rules_ports = $get_nsg_rules.DestinationPortRange
 
-foreach ($rule in $rules){
+foreach ($rule in $get_rules_ports){
     
-    if ($rules -eq "3389"){
+    if ($get_rules_ports -eq "3389"){
+        Write-Output " === Règle Firewall === "
+        Write-Output "La règle RDP existe déjà."
         break
     }
     else {
-        $nsg = Get-AzNetworkSecurityGroup -Name $NSG_name -ResourceGroupName $RG_name
+        $get_nsg_rules = Get-AzNetworkSecurityGroup -Name $NSG_name -ResourceGroupName $RG_name
         #Add the inbound security rule.
-        $nsg | Add-AzNetworkSecurityRuleConfig -Name "AllowRDPPort" -Description "Allow RDP port" `
-        -Access Allow -Protocol * -Direction Inbound -Priority 3901 -SourceAddressPrefix "*" `
-        -SourcePortRange * -DestinationAddressPrefix * -DestinationPortRange 3389
+        $get_nsg_rules | Add-AzNetworkSecurityRuleConfig -Name "AllowRDPPort" -Description "Allow RDP port" -Access Allow `
+        -Protocol * -Direction Inbound -Priority 3901 -SourceAddressPrefix "*" -SourcePortRange * `
+        -DestinationAddressPrefix * -DestinationPortRange 3389
         # Update the NSG.
-        $nsg | Set-AzNetworkSecurityGroup
-        break 
+        $get_nsg_rules | Set-AzNetworkSecurityGroup
+        break
     }
 }
 ```
@@ -135,19 +137,20 @@ foreach ($rule in $rules){
 Nous avons mis en place un menu où l'utilisateur va choisir ce qu'il fait, selon ses besoins.
 
 ```powershell
-    Write-Host "============= Pick the Server environment=============="
+    Write-Host "============= Choose =============="
     Write-Host "`ta. [1] pour déployer des VMs en précisant chaque paramètre"
     Write-Host "`tb. [2] pour déployer un nombre précis de VMs avec les mêmes paramètres"
-    Write-Host "`tc. [3] pour déployer des VMs depuis un Excel"
-    Write-Host "`td. [4] to Quit'"
+    Write-Host "`tc. [3] pour déployer des VMs depuis un CSV"
+    Write-Host "`tc. [4] pour stopper les VMs d'un RG"
+    Write-Host "`tc. [5] pour télécharger un fichier RDP d'une VM"
+    Write-Host "`td. [6] to Quit'"
     Write-Host "========================================================"
-    
-    $choice = Read-Host "`nEnter Choice"
+    $menu_choice = Read "Enter Choice"
 ```
 
 ### D - Appel de la fonction
 
-Etant donné que nous avons plusieurs possibilités dans notre script, l'appel va se faire de la même façon en écrivant "VM_Creation" qui est le nom de la fonction. Cependant, les informations données et/ou attendues ne sont pas les mêmes.
+Etant donné que nous avons plusieurs possibilités dans notre script, l'appel va se faire de la même façon en écrivant le nom de la fonction. Cependant, les informations données et/ou attendues ne sont pas les mêmes.
 
 
 ## 2/ Installation d'un Active Directory et DNS + création d'utilisateurs
