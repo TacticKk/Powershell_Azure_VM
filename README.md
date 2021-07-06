@@ -27,7 +27,11 @@ Connect-AzAccount
 
 ### B - Fonction VM_creation
 
-La création de fonction permet de faciliter la création de VM et d'éviter de réécrire de nombreuses choses.
+La création de fonctions permet de faciliter la lisibilité du script et de pouvoir appeler ces dernières lors du besoin.
+
+Voici nos différentes fonctions :
+
+1/ Fonction de création de la VM
 ```powershell
 function VM_creation {
     param ([string]$vm_name,[string]$RG_name,[string]$Location_name,[string]$VNet_name,[string]$subnet_name, [string]$NSG_name)
@@ -40,6 +44,7 @@ function VM_creation {
 }
 ```
 
+2/ Fonction d'update de la VM
 ```powershell
 function VM_update {
     param ([string]$vm_name,[string]$RG_name,[string]$Location_name,[string]$VNet_name,[string]$subnet_name, [string]$NSG_name)
@@ -50,6 +55,48 @@ function VM_update {
     $vm.HardwareProfile.VmSize = "Standard_B1s"
     Update-AzVM -VM $vm -ResourceGroupName $RG_name
     Start-AzVM -ResourceGroupName $RG_name  -Name $vm.name
+}
+```
+
+3/ Fonction d'arrêt de la VM
+```powershell
+function VM_stop {
+    param ([string]$vm_name,[string]$RG_name)
+
+    #Stop les VMs du RG
+    $RG_name = Read "Nom du RG "
+    $vm_name = (Get-AzVM -ResourceGroupName $RG_name).Name
+    Stop-AzVM -ResourceGroupName $RG_name -Name $vm_name -Force
+}
+```
+
+4/ Fonction de création du fichier RDP de la VM
+```powershell
+function VM_GetRDP {
+    param ([string]$vm_name,[string]$RG_name)
+
+    ##### fonction qui permet de créer le fichier RDP d'une VM
+
+    ## test si le dossier de stockage "RDP" existe. Si oui, il passe, si non, il le créer.
+    $test_path_directory = Test-Path -Path "C:\Users\Antoine\OneDrive - SCIENCES U LYON\ESGI\EII20-21\Powershell\project_powershell\RDP"
+
+    if ($test_path_directory -eq $true){
+        Write-Output "Le dossier RDP existe déjà"
+    }
+    else{
+        New-Item "C:\Users\Antoine\OneDrive - SCIENCES U LYON\ESGI\EII20-21\Powershell\project_powershell\" -itemtype directory -Name "RDP"
+    }
+
+## test si le fichier "$vm_name.rdp" existe. Si oui, il passe, si non, il le créer.
+    $test_file_RDP = Test-Path -Path "C:\Users\Antoine\OneDrive - SCIENCES U LYON\ESGI\EII20-21\Powershell\project_powershell\RDP\$vm_name.rdp"
+
+    if ($test_file_RDP -eq $true){
+        Write-Output "Le fichier RDP existe déjà"
+    }
+    else{
+        Get-AzRemoteDesktopFile -ResourceGroupName $RG_name -Name $vm_name -LocalPath "C:\Users\Antoine\OneDrive - SCIENCES U LYON\ESGI\EII20-21\Powershell\project_powershell\RDP\$vm_name.rdp"
+        Write-Output "Le fichier RDP a bien été créé."
+    }
 }
 ```
 
