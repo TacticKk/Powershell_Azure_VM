@@ -1,11 +1,14 @@
+============= add user ============
+
 Import-Module ActiveDirectory
 
-$csv = Import-Csv C:\Users\antoine\Desktop\MOCK_DATA.csv -Delimiter ";"
+$users_csv = Import-Csv "C:\Users\Antoine\OneDrive - SCIENCES U LYON\ESGI\EII20-21\Powershell\project_powershell\MOCK_DATA.csv" -Delimiter ";"
+$count = ($users_csv).count
 
 # Fournir l'UPN
 $UPN = "Powershell.local"
 
-foreach ($User in $csv) {
+foreach ($User in $users_csv) {
 
     $username = $User.username
     $password = $User.password
@@ -14,9 +17,12 @@ foreach ($User in $csv) {
     $OU = $User.OU 
     $email = $User.email
 
+    $i = 0
+
     # Check si l'user existe déjà dans l'AD
     if (Get-ADUser -F { SamAccountName -eq $username }) {
 
+        $i++
         Write-Warning "Un compte avec l'username $username existe déjà dans l'AD."
     }
     else {
@@ -34,6 +40,9 @@ foreach ($User in $csv) {
 
         Write-Host "Le compte de l'utilisateur $username a été créé." -ForegroundColor Cyan
     }
+
+    $count -= $i
+    Write-Output "The number of user qui ont été créé sont de : $i"
 }
 
 Read-Host -Prompt "Quiter..."
