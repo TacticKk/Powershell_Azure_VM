@@ -1,0 +1,3 @@
+Name,RG,Location,Vnet,Subnet,NSG
+VM-01,RG_test,francecentral,Vnet_test,frontendSubnet,NSG_test
+VM-02,RG_test,francecentral,Vnet_test,frontendSubnet,NSG_test
