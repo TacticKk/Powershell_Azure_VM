@@ -161,7 +161,7 @@ function NSG_rules {
 }
 ```
 
-### C - Menu des fonctions
+### C - Menu
 
 Nous avons mis en place un menu où l'utilisateur va choisir ce qu'il fait, selon ses besoins.
 
@@ -290,7 +290,6 @@ switch ($menu_choice) {
 }
 ```
 
-
 ## 2/ Installation d'un Active Directory et DNS + création d'utilisateurs
 
 ### A - Pré-requis
@@ -314,14 +313,19 @@ Install-ADDSForest -DomainName "Powershell.local" -DomainNetBiosName "POWER" -In
 Avec les deux lignes ci-dessous, nous allons faire de notre serveur, le serveur principal (de première zone) de notre domaine et rediriger les requêtes vers l'adresse IP 8.8.8.8 qui correpond aux serveurs DNS de Google.
 
 ```powershell
-Add-DnsServerPrimaryZone -NetworkID 10.0.1.0/24 -ZoneFile “10.0.1.4.in-addr.arpa.dns”
+$vm_name = Read-Host "Nom de la VM souhaitée "
+
+$get_VM_ipaddress = (Get-AzNetworkInterface -Name $vm_name -ResourceGroupName "RG_test").IpConfigurations.PrivateIpAddress
+$get_VNet_ipaddress = (Get-AzVirtualNetwork).AddressSpace.AddressPrefixes
+
+Add-DnsServerPrimaryZone -NetworkID $get_VNet_ipaddress -ZoneFile “$get_ipaddress.in-addr.arpa.dns”
 
 Add-DnsServerForwarder -IPAddress 8.8.8.8 -PassThru
 ```
 Nous allons tester que notre serveur fonctionne bien avec la ligne de commande suivant :
 
 ```powershell
-Test-DnsServer -IPAddress 10.0.1.4 -ZoneName "Powershell.local"
+Test-DnsServer -IPAddress $get_VM_ipaddress -ZoneName "Powershell.local" #Vérif fonctionnement DNS
 ```
 Si le résultat est un "Success" alors le serveur fonctionne.
 
