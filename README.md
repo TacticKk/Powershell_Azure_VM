@@ -339,39 +339,40 @@ Si le résultat est un "Success" alors le serveur fonctionne.
 Voici ci dessous le script permettant de créer les utilisateurs. Nous partons d'un fichier CSV, qui est importé avec la commande :
 
 ```powershell
-# Store the data from NewUsersFinal.csv in the $ADUsers variable
-$csv = Import-Csv C:\Users\antoine\Desktop\MOCK_DATA.csv -Delimiter ";"
+Import-Module ActiveDirectory
+
+$users_csv = Import-Csv "C:\Users\Antoine\OneDrive - SCIENCES U LYON\ESGI\EII20-21\Powershell\project_powershell\MOCK_DATA.csv" -Delimiter ";"
+$count = ($users_csv).count
 ```
 
 Ensuite, nous definissons l'UPN du domaine ainsi que pour chaque élément du fichier CSV, les éléments nécessaire à la création du compte via une boucle foreach :
 
 ```powershell
-# Define UPN
+# Fournir l'UPN
 $UPN = "Powershell.local"
 
-# Loop through each row containing user details in the CSV file
-foreach ($User in $csv) {
+foreach ($User in $users_csv) {
 
     $username = $User.username
     $password = $User.password
     $firstname = $User.prenom
     $lastname = $User.nom
-    $OU = $User.OU #This field refers to the OU the user account is to be created in
+    $OU = $User.OU 
     $email = $User.email
 ```
 Puis le script effectue une suppression des personnes déjà existantes dans l'AD en ayant comme base l'username de la personne, qui doit être unique. Dans le cas où l'username n'existe pas déjà, alors le compte est créé avec toutes les informations contenues dans le CSV.
 
 ```powershell
-    # Check to see if the user already exists in AD
+$i = 0
+
+    # Check si l'user existe déjà dans l'AD
     if (Get-ADUser -F { SamAccountName -eq $username }) {
-        
-        # If user does exist, give a warning
-        Write-Warning "Un compte avec l'username $username existe déjà dans l'AD."
+
+        $i++
+        Write-Output "Un compte avec l'username $username existe déjà dans l'AD."
     }
     else {
-
-        # User does not exist then proceed to create the new user account
-        # Account will be created in the OU provided by the $OU variable read from the CSV file
+        #Si l'user existe pas, il créer le compte
         New-ADUser -SamAccountName $username `
             -UserPrincipalName "$username@$UPN" `
             -Name "$firstname $lastname" `
@@ -381,12 +382,13 @@ Puis le script effectue une suppression des personnes déjà existantes dans l'A
             -DisplayName "$lastname, $firstname" `
             -Path $OU `
             -EmailAddress $email `
-            -AccountPassword (ConvertTo-secureString $password -AsPlainText -Force) `
-            -ChangePasswordAtLogon $True
+            -AccountPassword (ConvertTo-secureString $password -AsPlainText -Force) -ChangePasswordAtLogon $True
 
-        # If user is created, show message.
-        Write-Host "Le compte de l'utilisateur $username a été créé." -ForegroundColor Cyan
+        Write-Output "Le compte de l'utilisateur $username a été créé." -ForegroundColor Cyan
     }
+
+    $count -= $i
+    Write-Output "Le nombre d'utilisateurs qui ont été créé est de : $i"
 }
 
 Read-Host -Prompt "Quiter..."
