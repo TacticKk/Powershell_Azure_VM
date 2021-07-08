@@ -78,7 +78,8 @@ function VM_stop {
 function VM_remove {
     param ([string]$RG_name)
     
-    Get-AzVM -ResourceGroupName $RG_name | Select-Object Name | ForEach-Object { Remove-AzVM -ResourceGroupName $RG_Name -Name $_.Name -Force} 
+    Get-AzVM -ResourceGroupName $RG_name | Select-Object Name | ForEach-Object { Remove-AzVM -ResourceGroupName $RG_Name `
+    -Name $_.Name -Force} 
 }
 ```
 
@@ -96,7 +97,8 @@ function VM_GetRDP {
         Write-Output "Le dossier RDP existe déjà"
     }
     else{
-        New-Item "C:\Users\Antoine\OneDrive - SCIENCES U LYON\ESGI\EII20-21\Powershell\project_powershell\" -itemtype directory -Name "RDP"
+        New-Item "C:\Users\Antoine\OneDrive - SCIENCES U LYON\ESGI\EII20-21\Powershell\project_powershell\" `
+        -itemtype directory -Name "RDP"
     }
 
 ## test si le fichier "$vm_name.rdp" existe. Si oui, il passe, si non, il le créer.
@@ -123,7 +125,8 @@ function VM_RemoveRDP {
     $test_file_RDP = Test-Path -Path "C:\Users\Antoine\OneDrive - SCIENCES U LYON\ESGI\EII20-21\Powershell\project_powershell\RDP\$vm_name.rdp"
 
     if ($test_file_RDP -eq $true){
-        Remove-Item "C:\Users\Antoine\OneDrive - SCIENCES U LYON\ESGI\EII20-21\Powershell\project_powershell\$vm_name.rdp" -itemtype directory -Name "RDP"
+        Remove-Item "C:\Users\Antoine\OneDrive - SCIENCES U LYON\ESGI\EII20-21\Powershell\project_powershell\$vm_name.rdp" `
+        -itemtype directory -Name "RDP"
     }
     else{
         Write-Output "Le fichier rdp est inexistant."
