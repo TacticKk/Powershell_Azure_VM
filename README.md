@@ -25,9 +25,9 @@ Ensuite, il faut se connecter à son compte Azure sur lequel nous souhaitons fai
 Connect-AzAccount
 ```
 
-### B - Fonction VM_creation
+### B - Fonctions
 
-La création de fonctions permet de faciliter la lisibilité du script et de pouvoir appeler ces dernières lors du besoin.
+La création de fonctions permet de faciliter la lisibilité du script et de pouvoir appeler ces dernières au besoin sans réécrire tout le contenu. Dans les fonctions, nous avons mis en paramètres les informations dont nous avons besoin, afin de pouvoir vraiment simplifier la démarche.
 
 Voici nos différentes fonctions :
 
@@ -41,15 +41,16 @@ function VM_creation {
 
     #Pour WS2016 : ImageName = MicrosoftWindowsServer:WindowsServer:2016-Datacenter-Server-Core:latest
     #Pour WS2019 : ImageName = MicrosoftWindowsServer:WindowsServer:2019-Datacenter-Core:latest
+
 }
 ```
 
 2/ Fonction d'update de la VM
 ```powershell
 function VM_update {
-    param ([string]$vm_name,[string]$RG_name,[string]$Location_name,[string]$VNet_name,[string]$subnet_name, [string]$NSG_name)
+    param ([string]$vm_name,[string]$RG_name)
 
-    #Update le "Standard_B1s" à la création de la VM
+    #Update le "Standard_B1s" a la creation de la VM
     Stop-AzVM -ResourceGroupName $RG_name -Name $vm_name -Force
     $vm = Get-AzVM -ResourceGroupName $RG_name -VMName $vm_name
     $vm.HardwareProfile.VmSize = "Standard_B1s"
@@ -61,16 +62,26 @@ function VM_update {
 3/ Fonction d'arrêt de la VM
 ```powershell
 function VM_stop {
-    param ([string]$vm_name,[string]$RG_name)
+    param ([string]$RG_name)
 
     #Stop les VMs du RG
     $RG_name = Read "Nom du RG "
-    $vm_name = (Get-AzVM -ResourceGroupName $RG_name).Name
-    Stop-AzVM -ResourceGroupName $RG_name -Name $vm_name -Force
+    #$vm_name = (Get-AzVM -ResourceGroupName $RG_name).Name
+    #Stop-AzVM -ResourceGroupName $RG_name -Name $vm_name -Force
+    Get-AzVM -ResourceGroupName $RG_name | Select-Object Name | ForEach-Object { Stop-AzVM -ResourceGroupName $RG_Name -Name $_.Name -Force} 
 }
 ```
 
-4/ Fonction de création du fichier RDP de la VM
+4/ Fonction de suppression de la VM
+```powershell
+function VM_remove {
+    param ([string]$RG_name)
+    
+    Get-AzVM -ResourceGroupName $RG_name | Select-Object Name | ForEach-Object { Remove-AzVM -ResourceGroupName $RG_Name -Name $_.Name -Force} 
+}
+```
+
+5/ Fonction de création du fichier RDP de la VM
 ```powershell
 function VM_GetRDP {
     param ([string]$vm_name,[string]$RG_name)
@@ -100,12 +111,26 @@ function VM_GetRDP {
 }
 ```
 
-Dans cette fonction, nous avons mis en paramètres les informations dont nous avons besoin, afin de pouvoir vraiment simplifier la démarche.
+6/ Fonction de suppression du fichier RDP de la VM
+```powershell
+function VM_RemoveRDP {
+    param ([string]$vm_name)
 
-De plus, nous ne pouvons (contrairement au CLI Azure) fournir de base la "VM Size" que l'on souhaite. Ainsi, le script va en fournir une par défaut. C'est pourquoi nous faisons une update de la machine afin de passer dans la "VM Size" voulue.
+    ##### fonction qui permet de supprimer le fichier RDP d'une VM
 
-Enfin, nous avons juste après la fonction, une boucle foreach qui va vérifier si la règle pour le RDP est déjà existante ou non dans notre NSG et l'ajouter si ce n'est pas le cas.
+    ## test si le fichier "RDP" existe. Si oui, il le supprime, si non, wtf.
+    $test_file_RDP = Test-Path -Path "C:\Users\Antoine\OneDrive - SCIENCES U LYON\ESGI\EII20-21\Powershell\project_powershell\RDP\$vm_name.rdp"
 
+    if ($test_file_RDP -eq $true){
+        Remove-Item "C:\Users\Antoine\OneDrive - SCIENCES U LYON\ESGI\EII20-21\Powershell\project_powershell\$vm_name.rdp" -itemtype directory -Name "RDP"
+    }
+    else{
+        Write-Output "Le fichier rdp est inexistant."
+    }
+}
+```
+
+7/ Fonction de création de la règle RDP
 ```powershell
 #Ajout d'une règle entrante RDP au NSG afin de pouvoir prendre la main sur la machine
 
