@@ -91,24 +91,24 @@ function VM_GetRDP {
     ##### fonction qui permet de créer le fichier RDP d'une VM
 
     ## test si le dossier de stockage "RDP" existe. Si oui, il passe, si non, il le créer.
-    $test_path_directory = Test-Path -Path "C:\Users\Antoine\OneDrive - SCIENCES U LYON\ESGI\EII20-21\Powershell\project_powershell\RDP"
+    $test_path_directory = Test-Path -Path "C:\VOTRE\CHEMIN\VERS\LE\SCRIPT\"
 
     if ($test_path_directory -eq $true){
         Write-Output "Le dossier RDP existe déjà"
     }
     else{
-        New-Item "C:\Users\Antoine\OneDrive - SCIENCES U LYON\ESGI\EII20-21\Powershell\project_powershell\" `
+        New-Item "C:\VOTRE\CHEMIN\VERS\LE\SCRIPT\" `
         -itemtype directory -Name "RDP"
     }
 
 ## test si le fichier "$vm_name.rdp" existe. Si oui, il passe, si non, il le créer.
-    $test_file_RDP = Test-Path -Path "C:\Users\Antoine\OneDrive - SCIENCES U LYON\ESGI\EII20-21\Powershell\project_powershell\RDP\$vm_name.rdp"
+    $test_file_RDP = Test-Path -Path "C:\VOTRE\CHEMIN\VERS\LE\SCRIPT\RDP\$vm_name.rdp"
 
     if ($test_file_RDP -eq $true){
         Write-Output "Le fichier RDP existe déjà"
     }
     else{
-        Get-AzRemoteDesktopFile -ResourceGroupName $RG_name -Name $vm_name -LocalPath "C:\Users\Antoine\OneDrive - SCIENCES U LYON\ESGI\EII20-21\Powershell\project_powershell\RDP\$vm_name.rdp"
+        Get-AzRemoteDesktopFile -ResourceGroupName $RG_name -Name $vm_name -LocalPath "C:\VOTRE\CHEMIN\VERS\LE\SCRIPT\RDP\$vm_name.rdp"
         Write-Output "Le fichier RDP a bien été créé."
     }
 }
@@ -122,10 +122,10 @@ function VM_RemoveRDP {
     ##### fonction qui permet de supprimer le fichier RDP d'une VM
 
     ## test si le fichier "RDP" existe. Si oui, il le supprime, si non, wtf.
-    $test_file_RDP = Test-Path -Path "C:\Users\Antoine\OneDrive - SCIENCES U LYON\ESGI\EII20-21\Powershell\project_powershell\RDP\$vm_name.rdp"
+    $test_file_RDP = Test-Path -Path "C:\VOTRE\CHEMIN\VERS\LE\SCRIPT\RDP\$vm_name.rdp"
 
     if ($test_file_RDP -eq $true){
-        Remove-Item "C:\Users\Antoine\OneDrive - SCIENCES U LYON\ESGI\EII20-21\Powershell\project_powershell\$vm_name.rdp" `
+        Remove-Item "C:\VOTRE\CHEMIN\VERS\LE\SCRIPT\RDP\$vm_name.rdp" `
         -itemtype directory -Name "RDP"
     }
     else{
@@ -240,7 +240,7 @@ switch ($menu_choice) {
     #Deploiement de VMs via CSV
     '3'{
         #$path = Read "Quel est le path du CSV ?"
-        $VM_create_csv = Import-Csv "C:\Users\Antoine\OneDrive - SCIENCES U LYON\ESGI\EII20-21\Powershell\project_powershell\MOCK_DATAv2.csv" -Delimiter ","
+        $VM_create_csv = Import-Csv "C:\VOTRE\CHEMIN\VERS\LE\SCRIPT\MOCK_DATA.csv" -Delimiter ","
 
         foreach ($elements in $VM_create_csv) {
 
@@ -341,7 +341,7 @@ Voici ci dessous le script permettant de créer les utilisateurs. Nous partons d
 ```powershell
 Import-Module ActiveDirectory
 
-$users_csv = Import-Csv "C:\Users\Antoine\OneDrive - SCIENCES U LYON\ESGI\EII20-21\Powershell\project_powershell\MOCK_DATA.csv" -Delimiter ";"
+$users_csv = Import-Csv "C:\VOTRE\CHEMIN\VERS\LE\SCRIPT\MOCK_DATAv2.csv" -Delimiter ";"
 $count = ($users_csv).count
 ```
 
